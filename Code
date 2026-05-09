@@ -1,0 +1,59 @@
+char inChar;
+
+int redLED = 7;
+int greenLED = 8;
+int blueLED = 4;
+
+// Current color index
+int currentColor = 0;
+const int totalColors = 6;
+
+// Color table (R, G, B)
+int colors[6][3] = {
+  {1, 0, 0}, // Red
+  {0, 1, 0}, // Green
+  {0, 0, 1}, // Blue
+  {1, 1, 0}, // Yellow
+  {0, 1, 1}, // Cyan
+  {1, 0, 1}  // Magenta
+};
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+
+  applyColor();
+}
+
+void loop() {
+  if (!Serial.available()) return;
+
+  while (Serial.available()) {
+    inChar = Serial.read();
+    handleInput();
+  }
+}
+
+void handleInput() {
+
+  if (inChar == 'n') { // Next color
+    currentColor++;
+    if (currentColor >= totalColors) currentColor = 0;
+    applyColor();
+  }
+
+  if (inChar == 'p') { // Previous color
+    currentColor--;
+    if (currentColor < 0) currentColor = totalColors - 1;
+    applyColor();
+  }
+}
+
+void applyColor() {
+  digitalWrite(redLED, colors[currentColor][0]);
+  digitalWrite(greenLED, colors[currentColor][1]);
+  digitalWrite(blueLED, colors[currentColor][2]);
+}
